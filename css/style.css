@@ -1,0 +1,105 @@
+body{font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif;}
+.fakeInput {
+    display: flex;
+    align-items: center;
+    height:34px;
+    padding: 0 7px;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #bcc2c7;
+    border-radius: 3px;
+    -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+    -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    margin-bottom: 0;
+    color: #545b5b;
+}
+.hidden {
+    display: none !important;
+}
+.fakeInput.focus {
+    -moz-box-shadow: 0 0 4px #3498db !important;
+    -webkit-box-shadow: 0 0 4px #3498db !important;
+    box-shadow: 0 0 4px #3498db !important;
+    border: 1px solid #3498db !important;
+}
+.calendarIcon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+.calendarDropdown {
+    background: #fff;
+    padding: 10px;
+    position: absolute;
+    z-index: 300;
+    left: 0;
+    top: 35px;
+    border: 0;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 2px 16px rgba(0,0,0,0.15);
+    box-shadow: 0 2px 16px rgba(0,0,0,0.15);
+    margin: 0;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    max-height: 350px;
+    overflow: auto;
+}
+.calendarDropdown .calendarNav .calendarNav_left {
+    left: 15px;
+    cursor: pointer;
+}
+.calendarWrap {
+    display: table-cell;
+    padding: 0 5px 0 5px;
+}
+.abs-pos {
+    position: absolute !important;
+}
+.calendarDropdown .calendarNav .calendarNav_right {
+    right: 15px;
+    cursor: pointer;
+}
+.calendarWrap.firstCal {
+    padding-left: 0 !important;
+}
+.calendarWrap.lastCal {
+    padding-right: 0 !important;
+}
+.calendar-weekCellWrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.calendar-dayCell-empty, .calendar-weekCell, .calendar-dayCell, .calendar-dayCell-disabled {
+    display: flex;
+    width: 40px;
+    height: 38px;
+    justify-content: center;
+    align-items: center;
+}
+.calendar-dayCell {
+    cursor: pointer;
+}
+.calendar-dayCell-empty, .calendar-weekCell, .calendar-dayCell, .calendar-dayCell-disabled {
+    display: flex;
+    width: 40px;
+    height: 38px;
+    justify-content: center;
+    align-items: center;
+}
+.dtRangeSelected {
+    background: #3498db;
+    color: #fff;
+}
+.dtRangeSelected2{background:#c9dfed}
+.disabled{cursor:not-allowed !important;opacity:.3}
+.center {
+    margin: 0 auto;
+    text-align: center !important;
+}
