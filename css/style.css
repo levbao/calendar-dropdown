@@ -13,6 +13,9 @@ body{font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif;}
     transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
     margin-bottom: 0;
     color: #545b5b;
+    background: url(../images/small-calendar.svg) no-repeat;
+    background-position: right 5px bottom 8px;
+    background-size: 20px;
 }
 .hidden {
     display: none !important;
@@ -76,6 +79,7 @@ body{font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif;}
     align-items: center;
     justify-content: center;
 }
+.calendarWrap_small .calendar-monthYearRow + .calendarWrap_small .calendar-monthYearRow {margin-top: 15px;}
 .calendar-dayCell-empty, .calendar-weekCell, .calendar-dayCell, .calendar-dayCell-disabled {
     display: flex;
     width: 40px;
@@ -86,12 +90,8 @@ body{font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif;}
 .calendar-dayCell {
     cursor: pointer;
 }
-.calendar-dayCell-empty, .calendar-weekCell, .calendar-dayCell, .calendar-dayCell-disabled {
-    display: flex;
-    width: 40px;
-    height: 38px;
-    justify-content: center;
-    align-items: center;
+.calendar-dayCell-disabled,.navArrow_disabled{
+    color:#bcc2c7 !important;cursor: not-allowed !important;
 }
 .dtRangeSelected {
     background: #3498db;
