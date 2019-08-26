@@ -1,67 +1,84 @@
-/*
+/* object to pass to class is optional**********************************************************************
 calObj = {
     dateFieldID1: 'fromDate_hidden',          // id of input date 1 (hidden field)
-    dateFieldID2: 'toDate_hidden',            // id of input date 2 (hidden field and optional)
-    dateRangeOptions: true,                   // default false, set true to display button of 'This Month', 'Last Month', 'Last 90 Days' (this option is for date range so it also needs dateFieldID1 and dateFieldID2)
+    dateFieldID2: 'toDate_hidden',            // id of input date 2 (hidden field)
+    dateRangeOptions: true,                   // default false, set true to display button of 'This Month', 'Last Month', 'Last 90 Days' (this option is for date range so to display it also needs dateFieldID1 and dateFieldID2)
     datePlaceHolderID:'displayDateInput',     // id of the fake input box that display date
     numberOfCalDropdown: 2,                   // number of calendar to be displayed, default 1
-    dateFormat: 'DDD MMM DD YYYY'             // default dateFormat MM/DD/YYYY
+    dateFormat: 'DDD MMM DD YYYY'             // default dateFormat MM/DD/YYYY ['YYYY-MM-DD','MMM DD YYYY','DD-MMM-YYYY','DDD MMM DD YYYY','DD/MM/YYYY','MM/DD/YYYY']
     minDate: true,                            // default minDate false, set true to disable past date
     maxDate: true                             // default maxDate false, set true to disable future date
 }
-*/
+***********************************************************************************************************/
 class DisplayMyCalendar {
     constructor(calObj) {
         var that = this;
-        var smallScreen = 768;
+        var smallScreen = 640;
         var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
-        var hiddenDateField='';
-
+        
+        if(typeof calObj === 'undefined') var calObj = {};
         that.isSmallScreen = (width <= smallScreen) ? true : false;
         that.months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         that.weeks = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-        that.dateFormat = (typeof calObj !== 'undefined' && typeof calObj.dateFormat !== 'undefined') ? calObj.dateFormat : 'MM/DD/YYYY';
+        that.dateFormat = (typeof calObj.dateFormat !== 'undefined') ? calObj.dateFormat : 'MM/DD/YYYY';
         that.countClicksOnDayCell = 0;
         that.dateRangeOptions = false;
-        that.numberOfCalDropdown = (typeof calObj !== 'undefined' && typeof calObj.numberOfCalDropdown !== 'undefined') ? calObj.numberOfCalDropdown : 1;
-        that.datePlaceHolderID = (typeof calObj !== 'undefined' && typeof calObj.datePlaceHolderID !== 'undefined') ? calObj.datePlaceHolderID : 'displayDateInput';
-        that.minDate = (typeof calObj !== 'undefined' && typeof calObj.minDate !== 'undefined' && calObj.minDate) ? true : false;
-        that.maxDate = (typeof calObj !== 'undefined' && typeof calObj.maxDate !== 'undefined' && calObj.maxDate) ? true : false;
-
-        if(typeof calObj !== 'undefined' && typeof calObj.dateFieldID1 === 'undefined' && typeof calObj.dateFieldID2 === 'undefined') {
+        that.numberOfCalDropdown = (typeof calObj.numberOfCalDropdown !== 'undefined') ? calObj.numberOfCalDropdown : 1;
+        that.datePlaceHolderID = (typeof calObj.datePlaceHolderID !== 'undefined') ? calObj.datePlaceHolderID : 'displayDateInput';
+        that.minDate = (typeof calObj.minDate !== 'undefined' && calObj.minDate) ? true : false;
+        that.maxDate = (typeof calObj.maxDate !== 'undefined' && calObj.maxDate) ? true : false;
+        that.calendarPlaceHolderID = that.datePlaceHolderID+'_calendarWrapper';
+        that.dateFieldID2 = '';
+        that.selectedEndDate = '';
+        
+        if(typeof calObj.dateFieldID1 === 'undefined' && typeof calObj.dateFieldID2 === 'undefined') {
 			var calDt = 'calDate';
-			hiddenDateField = '<input type="hidden" id="'+calDt+'" name="'+calDt+'">';		    
-		    that.dateFieldID1 = calDt;	
-            that.selectedStartDate = that.getCurrentDate();
-		    
-		    document.getElementById(that.datePlaceHolderID).insertAdjacentHTML("afterend", hiddenDateField);
-		} else if(typeof calObj !== 'undefined' && typeof calObj.dateFieldID1 !== 'undefined' && typeof calObj.dateFieldID2 === 'undefined') {
-			that.dateFieldID1 = calObj.dateFieldID1;
-			that.selectedStartDate = (document.getElementById(calObj.dateFieldID1).value!="")? document.getElementById(calObj.dateFieldID1).value : that.getCurrentDate();
+			var hiddenDateField = '<input type="hidden" id="'+calDt+'" name="'+calDt+'">';		    
+            that.dateFieldID1 = calDt;	
+            that.selectedStartDate = that.getCurrentDate();	    
+            document.getElementById(that.datePlaceHolderID).insertAdjacentHTML("afterend", hiddenDateField);
+            
+		} else if(typeof calObj.dateFieldID1 !== 'undefined' && typeof calObj.dateFieldID2 === 'undefined') {
+            that.dateFieldID1 = calObj.dateFieldID1;
+            var dateFieldID1 = document.getElementById(calObj.dateFieldID1);
 
-		} else if(typeof calObj !== 'undefined' && typeof calObj.dateFieldID1 !== 'undefined' && typeof calObj.dateFieldID2 !== 'undefined') {
+            if(dateFieldID1 !=null && typeof dateFieldID1 !== 'undefined') {
+                that.selectedStartDate = (dateFieldID1.value!="")? dateFieldID1.value : that.getCurrentDate();
+
+            } else {
+			    var hiddenDateField = '<input type="hidden" id="'+calObj.dateFieldID1+'" name="'+calObj.dateFieldID1+'">';		    	
+                that.selectedStartDate = that.getCurrentDate();
+                document.getElementById(that.datePlaceHolderID).insertAdjacentHTML("afterend", hiddenDateField);
+
+            }
+		} else if(typeof calObj.dateFieldID1 !== 'undefined' && typeof calObj.dateFieldID2 !== 'undefined') {
 			that.dateFieldID1 = calObj.dateFieldID1;
-			that.dateFieldID2 = calObj.dateFieldID2;
-			that.selectedStartDate = (document.getElementById(calObj.dateFieldID1).value!="")? document.getElementById(calObj.dateFieldID1).value : that.getCurrentDate();
-			that.selectedEndDate   = (document.getElementById(calObj.dateFieldID2).value!="")? document.getElementById(calObj.dateFieldID2).value : "";
+            that.dateFieldID2 = calObj.dateFieldID2;
+
+            var dateFieldID1 = document.getElementById(calObj.dateFieldID1);
+            var dateFieldID2 = document.getElementById(calObj.dateFieldID2);
+
+            if((dateFieldID1 !=null && typeof dateFieldID1 !== 'undefined') && (dateFieldID2 !=null && typeof dateFieldID2 !== 'undefined')) {
+			    that.selectedStartDate = (dateFieldID1.value!="")? dateFieldID1.value : that.getCurrentDate();
+                that.selectedEndDate   = (dateFieldID2.value!="")? dateFieldID2.value : "";
+
+            } else {		    	
+                that.selectedStartDate = that.getCurrentDate();
+
+                var hiddenDateField1 = '<input type="hidden" id="'+calObj.dateFieldID1+'" name="'+calObj.dateFieldID1+'">';
+                var hiddenDateField2 = '<input type="hidden" id="'+calObj.dateFieldID2+'" name="'+calObj.dateFieldID2+'">';
+                document.getElementById(that.datePlaceHolderID).insertAdjacentHTML("afterend", hiddenDateField1);
+                document.getElementById(that.datePlaceHolderID).insertAdjacentHTML("afterend", hiddenDateField2);
+            }
 			that.dateRangeOptions = (typeof calObj.dateRangeOptions !== 'undefined' && calObj.dateRangeOptions)? true : false;
         }      
         that.init();
     }
     init() {
         var that = this;
-		var calWrapperID = that.datePlaceHolderID+'_calendarWrapper';
-	    
-	    that.dateFieldID2 = '';
-	    that.selectedEndDate = '';
-	    //that.today = new Date();
-	    that.today= that.getCurrentDate();
-
-		document.getElementById(that.datePlaceHolderID).insertAdjacentHTML("afterend",'<div class="abs-pos hidden calendarDropdown" id="'+calWrapperID+'"></div>');
+		document.getElementById(that.datePlaceHolderID).insertAdjacentHTML("afterend",'<div class="abs-pos hidden calendarDropdown" id="'+that.calendarPlaceHolderID+'"></div>');
         document.getElementById(that.datePlaceHolderID).parentNode.setAttribute("style","position:relative;");
-        
-        that.calendarPlaceHolderID = calWrapperID;
-		that.calendarOnClick();
+        that.calendarOnClick();
 	}
     showCalendar() {
         var that = this;
@@ -192,12 +209,12 @@ class DisplayMyCalendar {
     }
     isPastDate(dt) {
         var that = this;
-    	if(that.minDate && new Date(that.today) > new Date(dt)) return true;
+    	if(that.minDate && new Date(that.getCurrentDate()) > new Date(dt)) return true;
     	else return false;
     }
     isFutureDate(dt) {
         var that = this;
-    	if(that.maxDate && new Date(that.today) < new Date(dt)) return true;
+    	if(that.maxDate && new Date(that.getCurrentDate()) < new Date(dt)) return true;
     	else return false;
     }
     getCalendarWeekDays() {
@@ -216,7 +233,7 @@ class DisplayMyCalendar {
         var myNumOfCalDropdown = that.numberOfCalDropdown-1;
         var dt = new Date(fromDt);
         var endDt = new Date(dt.setMonth(dt.getMonth() + myNumOfCalDropdown));
-        var endDt_month = endDt.getMonth()+1;
+        var endDt_month = that.addLeadingZero(endDt.getMonth()+1);
         var endDt_yr = endDt.getFullYear();
         var toDt = endDt_month+"/01/"+endDt_yr;
         var calNavWrapper = document.createElement("div");      
@@ -313,15 +330,16 @@ class DisplayMyCalendar {
         month = that.addLeadingZero(month);
         day = that.addLeadingZero(day);
 
-        return [month,day,year].join('/'); 
+        return [month,day,year].join('/');
     }
     addLeadingZero(num) {
     	var myNum = parseInt(num);
     	return (myNum<10)? '0'+myNum : myNum;
     }
     getCurrentDate() {
+        var that = this;
         var dt = new Date();
-        var mth = dt.getMonth()+1;
+        var mth = that.addLeadingZero(dt.getMonth()+1);
         var yr = dt.getFullYear();
         var dy = dt.getDate();
         return mth+"/"+dy+"/"+yr;
@@ -330,14 +348,15 @@ class DisplayMyCalendar {
         var that = this;
         var d = new Date(dt);
         var startDt = new Date(d.setMonth(d.getMonth() - that.numberOfCalDropdown));
-        var startDt_month = startDt.getMonth()+1;
+        var startDt_month = that.addLeadingZero(startDt.getMonth()+1);
         var startDt_yr = startDt.getFullYear();
         return startDt_month+"/01/"+startDt_yr;
     }
     getGoRightDateSet(dt) {
+	    var that = this;
 	    var d = new Date(dt);
 	    var endDt = new Date(d.setMonth(d.getMonth() + 1));
-	    var endDt_month = endDt.getMonth()+1;
+	    var endDt_month = that.addLeadingZero(endDt.getMonth()+1);
 	    var endDt_yr = endDt.getFullYear();
 	    return endDt_month+"/01/"+endDt_yr;
     }
@@ -356,11 +375,10 @@ class DisplayMyCalendar {
     	document.getElementById(that.datePlaceHolderID).classList.remove("focus");
 		document.getElementById(that.calendarPlaceHolderID).classList.add("hidden");
     }
-    isInViewport(elem) {
+    isCalendarInViewport(elem) {
     	var distance = elem.getBoundingClientRect();
     	return (
-    		distance.top >= 0 &&
-    		distance.left >= 0 &&
+    		distance.top >= 0 && distance.left >= 0 &&
     		distance.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
     		distance.right <= (window.innerWidth || document.documentElement.clientWidth)
     	);
@@ -383,7 +401,7 @@ class DisplayMyCalendar {
                     calPlaceHolder.classList.remove("hidden");
                     calPlaceHolder.innerHTML = that.showCalendar().innerHTML;
                     
-                    if(!that.isInViewport(calPlaceHolder)) {
+                    if(!that.isCalendarInViewport(calPlaceHolder)) {
                     	calPlaceHolder.scrollIntoView({block: 'center',behavior: 'smooth'});
                     }
         		}
@@ -401,6 +419,7 @@ class DisplayMyCalendar {
 	            document.getElementById(that.calendarPlaceHolderID).innerHTML = that.showCalendar().innerHTML; 
     		} 
     		else if(!eTarget.closest("#"+that.calendarPlaceHolderID)) {
+            //else if(!$("#"+that.calendarPlaceHolderID).is(e.target) && $("#"+that.calendarPlaceHolderID).has(e.target).length === 0) {
     			that.setDateAndHideCalendar();
             } 
     		else if(eTarget.classList.contains("calDateOptionsButton")) {
